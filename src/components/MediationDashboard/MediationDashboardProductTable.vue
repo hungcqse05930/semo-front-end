@@ -139,14 +139,7 @@ export default {
   data() {
     const data = [
       {
-        id: 1,
-        title:
-          "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        //fruit: "TÁO AMBROSSIA",
-        price_cur: "TÁO AMBROSSIA",//test display
-        user_id: "Nguyen Ha Thanh",
-        date_created: "2016-10-15 13:43:27",
-        product_status: "⏲️ Chờ kiểm duyệt"
+        
       }
     ];
 
