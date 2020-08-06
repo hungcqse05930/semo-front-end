@@ -29,8 +29,19 @@ Vue.use(Buefy)
         </div>
       </div>
     </div>
+    <!-- subtitle tabs -->
+    <div id="sub-nav" v-if="home">
+      <div id="sub-content" class="column is-two-thirds">
+        <router-link to="/">🏡 Trang chủ</router-link>
+        <router-link to="/auction/latest">🎇 Mới nhất</router-link>
+        <router-link to="/fruit">🍑 Loại quả</router-link>
+        <router-link to="/collection">📘 Bộ sưu tập</router-link>
+      </div>
+    </div>
     <div class="main-view" style="display: block; margin-top: 12px;">
-      <router-view id="main-view" />
+      <transition name="moveUp">
+        <router-view id="main-view" />
+      </transition>
     </div>
 
     <div class="footer">
@@ -49,19 +60,10 @@ Vue.use(Buefy)
         </div>
       </div>
     </div>
-    <router-link to="/about">About |</router-link>
     <router-link to="/login">Login |</router-link>
-    <router-link to="/registerstep2">r2 |</router-link>
-    <router-link to="/registerstep3">r3 |</router-link>
-    <router-link to="/registerstep4">r4 |</router-link>
-    <router-link to="/registerstep5">r5</router-link>
-    <router-link to="/registerstep6">r6</router-link>
-    <router-link to="/registerstep7">r7</router-link>
-    <!-- <router-link to="/userinformationfile">njlbh</router-link> -->
     <router-link to="/resetpassword">pwđ</router-link>
     <router-link to="/userinformationaddress">add</router-link>
     <router-link to="/userinformationaccuracy">accuracy</router-link>
-    <router-link to="/search">Search</router-link>
     <router-link to="/createnewproduct">CNP</router-link>
     <router-link to="/createnewproductfortree">CNPFT</router-link>
     <router-link to="/mediationdashboardproduct">mediationproduct</router-link>
@@ -90,35 +92,50 @@ export default {
   data() {
     return {
       search: "",
+      home: true,
     };
   },
   computed: {
     loggedIn() {
-      return this.$store.state.token;
+      return this.$store.state.user.token;
     },
-    // isHome() {
-    //   let isHome = false;
-    //   switch (this.$router.currentRoute.path) {
-    //     case "/":
-    //       isHome = true;
-    //       break;
-    //     case "/auction/latest":
-    //       isHome = true;
-    //       break;
-    //     case "/fruit":
-    //       isHome = true;
-    //       break;
-    //     case "/collection":
-    //       isHome = true;
-    //       break;
-    //   }
-
-    //   return isHome;
-    // },
+  },
+  watch: {
+    "$route.currentRoute.path": function () {
+      if(this.$route.currentRoute.path === '/' || this.$route.currentRoute.path === '/auction/latest'
+      || this.$route.currentRoute.path === '/fruit' || this.$route.currentRoute.path === '/collection'){
+        this.home = true
+      } else {
+        this.home = false
+      }
+    },
+  },
+  created() {
+    this.routeWatcher = this.$watch(
+      function () {
+        return this.$route.currentRoute.path;
+      },
+      function (route) {
+        if (
+          route === "/" ||
+          route === "/auction/latest" ||
+          route === "/fruit" ||
+          route === "/collection"
+        ) {
+          this.home = true;
+        } else {
+          this.home = false;
+        }
+      }
+    );
   },
   methods: {
     logout() {
-      this.$store.dispatch("LOGOUT");
+      let vm = this;
+
+      this.$store.dispatch("LOGOUT").then(() => {
+        vm.$router.push({ path: "/" });
+      });
     },
     search_universal() {
       this.$store.dispatch("SEARCH", {
@@ -131,6 +148,7 @@ export default {
 
 <style lang="scss">
 @import "~bulma/sass/utilities/_all";
+
 body {
   background-color: #fcfcfc;
 }
@@ -242,6 +260,7 @@ body {
   background-color: #ffffff99;
   backdrop-filter: saturate(180%) blur(200px) brightness(150%);
   display: flex;
+
   a {
     font-weight: bold;
     font-size: 14px;
@@ -274,7 +293,7 @@ body {
   position: sticky;
   top: 68px;
   z-index: 1;
-  background-color: #FCFCFC;
+  background-color: #fcfcfc;
   width: 100%;
 
   #sub-content {
@@ -282,7 +301,9 @@ body {
     margin: 0 auto;
     justify-content: space-between;
     padding-bottom: 0;
+    max-width: 960px;
   }
+
   a {
     font-size: 16px;
     font-family: "Merriweather";
@@ -297,8 +318,56 @@ body {
   }
 }
 
+// router link
+.nav-tabs {
+  margin-bottom: 12px;
+}
+
+.router-link {
+  text-align: center;
+  a {
+    font-size: 23px;
+    font-family: "Merriweather";
+    font-weight: 900;
+    color: #70707079;
+    padding-bottom: 12px;
+
+    &.router-link-exact-active {
+      color: #b88cd8;
+      border-bottom: #01d28e solid 2px;
+    }
+  }
+}
+
 .footer {
   margin-top: 80px;
+}
+
+// animation
+.moveUp-enter-active {
+  animation: fadeIn 0.25s ease-in;
+}
+
+@keyframes fadeIn {
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.moveUp-leave-active {
+  animation: fadeOut 0.125s ease-in;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 $primary: #01d28e;
