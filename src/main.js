@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import App from './App.vue'
+// import App from './App.vue'
+import App from './views/MediationDashboardProduct.vue'//HaPTH create fake import for accessing CreateNewProduct.vue screen
 import Buefy from 'buefy'
 import router from './router'
 import store from './stores/store'

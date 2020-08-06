@@ -15,7 +15,6 @@
 <script>
 import MediationDashboardMenu from "../components/MediationDashboard/MediationDashboardMenu.vue";
 import MediationDashboardProductTable from "../components/MediationDashboard/MediationDashboardProductTable.vue";
-
 export default {
   name: "mediationdashboardhome",
   components: {
