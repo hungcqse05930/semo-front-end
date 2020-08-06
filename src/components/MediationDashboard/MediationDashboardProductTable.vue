@@ -9,7 +9,7 @@
     </div> -->
       <b-table
       class="dashboard-table"
-      :data="data"
+      :data="products"
       :checked-rows.sync="checkedRows"
       checkable
       checkbox-position="right"
@@ -59,7 +59,10 @@ export default {
   components: {
     MediationDashboardDelete,
   },
-    methods: {
+  created: function () {
+    this.getAllProducts();
+  },
+  methods: {
     deleteAlert(){
        this.$buefy.modal.open({
          parent: this,
@@ -68,76 +71,89 @@ export default {
          trapFocus: true
        })
     }
+
+    ,getAllProducts(){
+      console.log('Access getAllProducts in file Admindashboarddeal.vue')
+      fetch(`http://localhost:3003/admin/`)
+      .then((response)=> response.json())
+      .then((json)=>{
+         if (Object.keys(json).length == 0) {
+           console.log('No product get from db')
+         }else{
+           let this_ = this
+           console.log('The number of users is: ' + Object.keys(json).length)
+           this_.products = [{}]
+           this_.products = this.getProduct(json)
+           console.log("New this.products array after use map function: " + this_.products.length)
+        
+           ////Declare value for products variable
+           //this.products = [{}]
+           //for(var i = 0; i< Object.keys(json).length; i++){
+             //for(var j = 0; j< Object.keys(json[i].Products).length; j++){
+                //this.products.push(json[i].Products[j])
+             //}
+           //}
+           //delete this.products[0]//Delete initial data which has value is null
+           
+           //console.log(this.products[1].Fruit.title)
+         }
+      })
+    }
+
+    ,getProduct(userObject){
+        var id, title, sort_of_fruit, name, date_created, product_status;
+        var productList = [{}];
+        var product = {}
+        for(var j = 0; j<userObject.length; j++){
+          var user = userObject[j];
+          for(var i = 0; i<user.Products.length; i++){
+            id = user.Products[i].id;
+            title = user.Products[i].title;
+            sort_of_fruit = user.Products[i].Fruit.title;
+            name = user.name;
+            date_created = user.Products[i].date_created
+            if(user.Products[i].product_status == 0){
+              product_status = 'trượt kiểm duyệt';
+            }else if(user.Products[i].product_status == 1){
+              product_status = 'chờ kiểm duyệt';
+            }else if(user.Products[i].product_status == 2){
+              product_status = 'đã kiểm duyệt';
+            }else if(user.Products[i].product_status == 3){
+              product_status = 'đang được đấu giá';
+            }else if(user.Products[i].product_status == 4){
+              product_status = 'đang giao kèo';
+            }else if(user.Products[i].product_status == 5){
+              product_status =  'đã bán';
+            }else if(user.Products[i].product_status == 9){
+              product_status =  'lưu trữ';
+            }
+            product = {id: id, title: title, sort_of_fruit: sort_of_fruit, name: name, date_created: date_created, product_status: product_status};
+            productList.push(product);
+          }
+        }
+        delete productList[0]
+        return productList;
+    }
+    
   },
   data() {
     const data = [
       {
         id: 1,
-        content:
+        title:
           "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        product_name: "TÁO AMBROSSIA",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27",
-        status: "⏲️ Chờ kiểm duyệt"
-      },
-      {
-        id: 2,
-        content:
-          "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        product_name: "TÁO AMBROSSIA",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27",
-        status: "💰 Đã bán"
-      },
-      {
-        id: 3,
-        content:
-          "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        product_name: "TÁO AMBROSSIA",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27",
-        status: "💰 Đã bán"
-      },
-      {
-        id: 4,
-        content:
-          "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        product_name: "TÁO AMBROSSIA",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27",
-        status: "🤝 Đang giao kèo"
-      },
-      {
-        id: 5,
-        content:
-          "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        product_name: "TÁO AMBROSSIA",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27",
-        status: "✅ Đã kiểm duyệt"
-      },
-      {
-        id: 6,
-        content:
-          "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        product_name: "TÁO AMBROSSIA",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27",
-        status: "⚠ Cần chỉnh sửa"
-      },
-      {
-        id: 7,
-        content:
-          "Táo này là táo Ambrossia nè các cậu ơi. Dòng thứ 2 của sản phẩm",
-        product_name: "TÁO AMBROSSIA",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27",
-        status: "💸 Đang đấu giá"
+        //fruit: "TÁO AMBROSSIA",
+        price_cur: "TÁO AMBROSSIA",//test display
+        user_id: "Nguyen Ha Thanh",
+        date_created: "2016-10-15 13:43:27",
+        product_status: "⏲️ Chờ kiểm duyệt"
       }
     ];
 
     return {
       data,
+      products: Object,
+      users: Object,
       checkboxPosition: "left",
       checkedRows: [],
       columns: [
@@ -149,28 +165,29 @@ export default {
           searchable: true
         },
         {
-          field: "content",
+          field: "title",
           label: "TÊN SẢN PHẨM",
           searchable: true
         },
         {
-          field: "product_name",
+          //field: "fruit",
+          field: "sort_of_fruit",
           label: "LOẠI QUẢ",
           searchable: true
         },
         {
-          field: "user_name",
+          field: "name",
           label: "NGƯỜI ĐĂNG",
           searchable: true
         },
         {
-          field: "date",
+          field: "date_created",
           label: "THƠI GIAN ĐĂNG",
           centered: true,
           searchable: true
         },
         {
-          field: "status",
+          field: "product_status",
           label: "TRẠNG THÁI",
           searchable: true
         }
