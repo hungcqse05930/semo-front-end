@@ -45,7 +45,7 @@
     </div>
     <!-- most viewed -->
     <div class="most-viewed">
-      <auction-carousel-list :products="products">
+      <auction-carousel-list :auctions="most_viewed">
         <template v-slot:title>Đông đảo bà con</template>
       </auction-carousel-list>
     </div>
@@ -99,6 +99,7 @@
 
 <script>
 // @ is an alias to /src
+import axios from "axios";
 import AuctionCarouselList from "../components/AuctionCarouselList.vue";
 import AuctionGridList from "../components/AuctionGridList.vue";
 import GridCircularList from "../components/GridCircularList.vue";
@@ -109,6 +110,9 @@ export default {
     AuctionCarouselList,
     GridCircularList,
     AuctionGridList,
+  },
+  created() {
+    this.getLatest();
   },
   data() {
     return {
@@ -279,6 +283,7 @@ export default {
           address: { province: "Hà Giang" },
         },
       ],
+      most_viewed: [],
       // fruits
       fruits: [
         {
@@ -369,7 +374,14 @@ export default {
       // modal1: false,
       // modal2: false,
     };
-  }
+  },
+  methods: {
+    getLatest() {
+      axios.get("/auction/latest").then((response) => {
+        this.most_viewed = response.data;
+      });
+    },
+  },
 };
 </script>
 

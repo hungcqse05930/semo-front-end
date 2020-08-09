@@ -60,7 +60,6 @@ Vue.use(Buefy)
         </div>
       </div>
     </div>
-    <router-link to="/login">Login |</router-link>
     <router-link to="/resetpassword">pwđ</router-link>
     <router-link to="/userinformationaddress">add</router-link>
     <router-link to="/userinformationaccuracy">accuracy</router-link>
@@ -99,35 +98,6 @@ export default {
     loggedIn() {
       return this.$store.state.user.token;
     },
-  },
-  watch: {
-    "$route.currentRoute.path": function () {
-      if(this.$route.currentRoute.path === '/' || this.$route.currentRoute.path === '/auction/latest'
-      || this.$route.currentRoute.path === '/fruit' || this.$route.currentRoute.path === '/collection'){
-        this.home = true
-      } else {
-        this.home = false
-      }
-    },
-  },
-  created() {
-    this.routeWatcher = this.$watch(
-      function () {
-        return this.$route.currentRoute.path;
-      },
-      function (route) {
-        if (
-          route === "/" ||
-          route === "/auction/latest" ||
-          route === "/fruit" ||
-          route === "/collection"
-        ) {
-          this.home = true;
-        } else {
-          this.home = false;
-        }
-      }
-    );
   },
   methods: {
     logout() {
@@ -206,6 +176,17 @@ body {
   font-weight: 700;
   color: #707070;
   margin-bottom: 16px;
+}
+
+.active {
+  color: #01d28e;
+}
+
+.auction-title {
+  font-size: 26px;
+  font-family: "Merriweather";
+  font-weight: 700;
+  line-height: 36px;
 }
 
 // scrollbar

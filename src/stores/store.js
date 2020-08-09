@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios'
@@ -75,7 +76,7 @@ export default new Vuex.Store({
                 commit('DESTROY_SESSION')
             }
         },
-        SEARCH: (keyword) => {
+        SEARCH: ({ commit }, keyword) => {
             router.push({ path: '/search/' + keyword.keyword })
         },
         SIGN_UP_PHONE: ({ commit }, user) => {

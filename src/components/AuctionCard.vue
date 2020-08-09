@@ -1,34 +1,37 @@
 <template>
-  <a :href="product.url">
-    <div class="product-container">
-      <div class="product-thumbnail" :style="{backgroundImage: 'url(' + product.img_url + ')'}">
+    <div class="product-container" @click="moveToPage">
+      <div class="product-thumbnail" :style="{backgroundImage: 'url(' + auction.Product.ProductMedia[0].media_url + ')'}">
         <!-- <img src="@/assets/logo.png" :alt="product.title" /> -->
       </div>
       <div class="product-content">
-        <p class="product-title">{{ product.title }}</p>
+        <p class="product-title">{{ auction.Product.title }}</p>
         <div class="product-section">
           <p class="section-label">Giá hiện tại</p>
-          <p class="section-content">{{ product.price }}đ</p>
+          <p class="section-content">{{ auction.price_cur }}đ</p>
         </div>
         <div class="product-section">
           <p class="section-label">Thời gian còn lại</p>
-          <p class="section-content">{{ product.remaining }}</p>
+          <p class="section-content">{{ auction.remain }}</p>
         </div>
         <div class="product-information">
-          <p class="section-label">{{ product.weight }}</p>
-          <p class="section-label">{{ product.address.province }}</p>
+          <p class="section-label">{{ auction.Product.weight }} tạ</p>
+          <p class="section-label">{{ auction.Product.Address.province }}</p>
         </div>
       </div>
     </div>
-  </a>
 </template>
 
 <script>
 export default {
   name: "AuctionCard",
   props: {
-    product: Object,
+    auction: Object,
   },
+  methods: {
+    moveToPage() {
+      this.$router.push({ path: '/auction/' + this.auction.id })
+    }
+  }
   // },
   // data() {
   //   return {

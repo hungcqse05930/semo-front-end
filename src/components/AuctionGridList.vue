@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <!-- title bar -->
-    <div class="title columns is-2 is-mobile">
-      <div class="column is-one-third-mobile is-one-quarter-tablet is-one-fifth-desktop is-2-widescreen is-2-fullhd" v-for="title in titles" :key="title.index">
+    <div class="title columns is-centered is-mobile">
+      <div class="column is-half is-narrow" style="display: flex; justify-content: center;" v-for="title in titles" :key="title.index">
         <p
           :class="{ 'list-title' : activeTab === title.index, 'list-title-inactive' : activeTab !== title.index }"
           @click="changeIndex(title.index)"
@@ -17,7 +17,7 @@
         v-for="(product, i) in products"
         :key="i"
       >
-        <auction-card :product="product"></auction-card>
+        <auction-card :auction="auction"></auction-card>
       </div>
     </div>
     <!-- more button -->

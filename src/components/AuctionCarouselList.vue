@@ -22,10 +22,10 @@
       <div
         id="auction-strip"
         class="auction column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen is-2-fullhd"
-        v-for="(product, i) in products"
+        v-for="(auction, i) in auctions"
         :key="i"
       >
-        <auction-card :product="product"></auction-card>
+        <auction-card :auction="auction"></auction-card>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@ import AuctionCard from "./AuctionCard.vue";
 export default {
   name: "AuctionCarouselList",
   props: {
-    products: Array,
+    auctions: Array,
   },
   components: {
     AuctionCard,
