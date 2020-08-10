@@ -235,7 +235,6 @@ export default {
   width: 600px;
   height: 62px;
 }
-
 .div3 {
   margin-top: 25px;
   width: 600px;
@@ -263,18 +262,15 @@ export default {
   font-size: 28px;
   color: #01d28e;
 }
-
 .smalltext {
   font-family: "Roboto";
   font-weight: 400;
   font-size: 18px;
   color: #686868;
 }
-
 .edited {
   color: #FD5F55 !important;
 }
-
 .choosefood {
   margin-top: 6px;
   margin-bottom: 10px;

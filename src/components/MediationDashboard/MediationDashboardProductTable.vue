@@ -20,13 +20,12 @@
       >
         <template slot-scope="props">
           <template v-for="column in columns">
-            <b-table-column :key="column.id" v-bind="column"
-             onclick="window.location.href='/cencorproductmediation'">
-              <template
-                v-if="column.searchable && !column.numeric"
-                slot="searchable"
-                slot-scope="props"
-              >
+            <b-table-column :key="column.id" v-bind="column.id"  onclick="window.location.href='/cencorproductmediation'">
+                <template
+                  v-if="column.searchable && !column.numeric"
+                  slot="searchable"
+                  slot-scope="props"
+                >
                 <b-input
                   v-model="props.filters[props.column.field]"
                   placeholder="Search..."
@@ -84,6 +83,7 @@ export default {
            console.log('The number of users is: ' + Object.keys(json).length)
            this_.products = [{}]
            this_.products = this.getProduct(json)
+            //this_.products = json
            console.log("New this.products array after use map function: " + this_.products.length)
         
            ////Declare value for products variable
@@ -105,31 +105,37 @@ export default {
         var productList = [{}];
         var product = {}
         for(var j = 0; j<userObject.length; j++){
-          var user = userObject[j];
-          for(var i = 0; i<user.Products.length; i++){
-            id = user.Products[i].id;
-            title = user.Products[i].title;
-            sort_of_fruit = user.Products[i].Fruit.title;
-            name = user.name;
-            date_created = user.Products[i].date_created
-            if(user.Products[i].product_status == 0){
-              product_status = 'trượt kiểm duyệt';
-            }else if(user.Products[i].product_status == 1){
-              product_status = 'chờ kiểm duyệt';
-            }else if(user.Products[i].product_status == 2){
-              product_status = 'đã kiểm duyệt';
-            }else if(user.Products[i].product_status == 3){
-              product_status = 'đang được đấu giá';
-            }else if(user.Products[i].product_status == 4){
-              product_status = 'đang giao kèo';
-            }else if(user.Products[i].product_status == 5){
-              product_status =  'đã bán';
-            }else if(user.Products[i].product_status == 9){
-              product_status =  'lưu trữ';
+            id = userObject[j].id;
+            title = userObject[j].title;
+            sort_of_fruit = userObject[j].Fruit.title;
+            name = userObject[j].User.name;
+            date_created = userObject[j].date_created
+            switch(userObject[j].product_status){
+              case 0:
+                product_status = 'trượt kiểm duyệt';
+                break;
+              case 1:
+                product_status = 'chờ kiểm duyệt';
+                break;
+              case 2:
+                product_status = 'trượt kiểm duyệt';
+                break;
+              case 3:
+                product_status = 'đang được đấu giá';
+                break;
+              case 4:
+                product_status = 'đang giao kèo';
+                break;
+              case 5:
+                product_status = 'đã bán';
+                break;
+              case 9:
+                product_status = 'lưu trữ';
+                break;
             }
+            
             product = {id: id, title: title, sort_of_fruit: sort_of_fruit, name: name, date_created: date_created, product_status: product_status};
             productList.push(product);
-          }
         }
         delete productList[0]
         return productList;
