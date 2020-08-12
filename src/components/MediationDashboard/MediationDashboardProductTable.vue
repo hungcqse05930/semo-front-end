@@ -83,6 +83,7 @@ export default {
     ,redirectToCencorProductMediation(p_id){
       console.log("access redirectToCencorProductMediation, p_id = "+p_id)
       // window.location.href = "/cencorproductmediation/"
+      sessionStorage.setItem('product_id_cencor_session',p_id)
       this.$router.push({
         name: 'CencorProductMediation',
         params: {

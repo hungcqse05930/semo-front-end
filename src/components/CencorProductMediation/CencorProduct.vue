@@ -1,6 +1,6 @@
 <template>
   <nav class="title-bar-container">
-    <form id="ReviewProductForm" @submit="adminReview()">
+    <form id="ReviewProductForm" method="POST" action="http://localhost:3003/admin/reviewProduct">
       <div id="title-bar-content">
         <p class="info">Thông tin chung về sản phẩm</p>
 
@@ -117,20 +117,20 @@
         </div>
 
         <p class="info1">Sản phẩm của bạn trông thế nào?</p>
-
-        <div class="div4">
-          <div class="divimg">
-            <div class="accuracies">
-              <CencorProductDivImg
-                class="accuracy-item"
-                v-bind:accuracy="accuracy"
-                v-for="accuracy in accuracies"
-                v-bind:key="accuracy.id"
-              />
+        <form id="cencor_product_div_img_form" method="post" action="http://localhost:3003/admin/reviewMedia">
+          <div class="div4">
+            <div class="divimg">
+              <div class="accuracies">
+                <CencorProductDivImg
+                  class="accuracy-item"
+                  v-bind:accuracy="accuracy"
+                  v-for="accuracy in accuracies"
+                  v-bind:key="accuracy.id"
+                />
+              </div>
             </div>
           </div>
-        </div>
-
+        </form>
         <p class="info1">Hãy định giá cho sản phẩm của bạn</p>
 
         <div class="div1">
@@ -173,7 +173,7 @@
 
         <div class="buttons">
           <!-- <b-button type="is-success">Gửi kiểm định</b-button> -->
-          <input class="btn-submit" type="submit" disabled value="Gửi kiểm định" />
+          <input class="btn-submit" v-on:click="adminReview()" value="Gửi kiểm định" />
         </div>
       </div>
     </form>
@@ -190,16 +190,11 @@ export default {
   props: ["product_id_cencor"],
   created: function () {
     this.getProductById();
-    // this.$session.start()
-    // this.$session.set('product_id_cencor_session', this.product_id_cencor)
   },
   methods: {
     getProductById() {
-      console.log(
-        "Access function getProductById, this.product_id_cencor = " +
-          this.product_id_cencor
-      );
-      fetch(`http://localhost:3003/admin/review/${this.product_id_cencor}`)
+      console.log("Access function getProductById");
+      fetch(`http://localhost:3003/admin/review/${sessionStorage.getItem('product_id_cencor_session')}`)
         .then((response) => response.json())
         .then((json) => {
           if (Object.keys(json).length == 0) {
@@ -227,39 +222,9 @@ export default {
           }
         });
     },
-    updateProduct_media() {
-      console.log("Access updateProduct_media function...")
-      var requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "Vue POST Request Example" })
-      };
-      console.log("Access updateProduct_media function...");
-      fetch(`http://localhost:3003/admin/reviewMedia`, requestOptions)
-        .then((response) => response.json())
-        .then((json) => {
-          console.log("Result is: ");
-          console.dir(json);
-        });
-    },
-    insertProductUpdateRequest(){
-      console.log("Access insertProductUpdateRequest function...")
-      var requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "Vue POST Request Example" })
-      };
-      fetch(`http://localhost:3003/admin/reviewProduct`, requestOptions)
-      .then(response => response.json())
-      .then((json) => {
-        console.log('Result is: ')
-        console.dir(json)
-      });
-    },
     adminReview() {
       console.log("Access adminReview function...");
-      // this.updateProduct_media()
-      //this.insertProductUpdateRequest()
+      document.getElementById('ReviewProductForm').submit();
     },
   },
   data() {
