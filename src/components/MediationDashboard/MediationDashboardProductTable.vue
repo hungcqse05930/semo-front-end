@@ -8,34 +8,26 @@
       </div>
     </div> -->
       <b-table
-      class="dashboard-table"
       :data="products"
       :checked-rows.sync="checkedRows"
-      checkable
-      checkbox-position="right"
       paginated
       pagination-simple
       hoverable
       per-page="20"
       >
-        <template slot-scope="props">
-          <template v-for="column in columns">
-            <b-table-column :key="column.id" v-bind="column.id"  onclick="window.location.href='/cencorproductmediation'">
-                <template
-                  v-if="column.searchable && !column.numeric"
-                  slot="searchable"
-                  slot-scope="props"
-                >
-                <b-input
-                  v-model="props.filters[props.column.field]"
-                  placeholder="Search..."
-                  size="is-small"
-                />
-              </template>
-              {{ props.row[column.field] }}
-            </b-table-column>
-          </template>
+      
+        <template slot-scope="product">
+          <tr class="table-row" v-bind:product_id="product.row.id" v-on:click="redirectToCencorProductMediation(product.row.id)">
+            <td style="width: 10%" :id="product.row.id">{{product.row.id}}</td>
+            <td  style="width: 20%">{{product.row.title}}</td>
+            <td class="table-column">{{product.row.sort_of_fruit}}</td>
+            <td class="table-column">{{product.row.name}}</td>
+            <td class="table-column">{{product.row.date_created}}</td>
+            <td class="table-column">{{product.row.product_status}}</td>
+            <td  style="width: 10%"><input type="checkbox"/></td>
+          </tr>
         </template>
+        
         <template slot="bottom-left">
           <b>Total checked</b>
           : {{ checkedRows.length }}
@@ -83,20 +75,19 @@ export default {
            console.log('The number of users is: ' + Object.keys(json).length)
            this_.products = [{}]
            this_.products = this.getProduct(json)
-            //this_.products = json
            console.log("New this.products array after use map function: " + this_.products.length)
-        
-           ////Declare value for products variable
-           //this.products = [{}]
-           //for(var i = 0; i< Object.keys(json).length; i++){
-             //for(var j = 0; j< Object.keys(json[i].Products).length; j++){
-                //this.products.push(json[i].Products[j])
-             //}
-           //}
-           //delete this.products[0]//Delete initial data which has value is null
-           
-           //console.log(this.products[1].Fruit.title)
          }
+      })
+    }
+
+    ,redirectToCencorProductMediation(p_id){
+      console.log("access redirectToCencorProductMediation, p_id = "+p_id)
+      // window.location.href = "/cencorproductmediation/"
+      this.$router.push({
+        name: 'CencorProductMediation',
+        params: {
+          product_id: p_id
+        }
       })
     }
 
@@ -112,27 +103,27 @@ export default {
             date_created = userObject[j].date_created
             switch(userObject[j].product_status){
               case 0:
-                product_status = 'trượt kiểm duyệt';
+                product_status = 'Trượt kiểm duyệt';
                 break;
               case 1:
-                product_status = 'chờ kiểm duyệt';
+                product_status = 'Chờ kiểm duyệt';
                 break;
               case 2:
-                product_status = 'trượt kiểm duyệt';
+                product_status = 'Đã kiểm duyệt';
                 break;
               case 3:
-                product_status = 'đang được đấu giá';
+                product_status = 'Đang được đấu giá';
                 break;
               case 4:
-                product_status = 'đang giao kèo';
+                product_status = 'Đang giao kèo';
                 break;
               case 5:
-                product_status = 'đã bán';
+                product_status = 'Đã bán';
                 break;
               case 9:
-                product_status = 'lưu trữ';
+                product_status = 'Lưu trữ';
                 break;
-            }
+          }
             
             product = {id: id, title: title, sort_of_fruit: sort_of_fruit, name: name, date_created: date_created, product_status: product_status};
             productList.push(product);
@@ -224,5 +215,15 @@ export default {
   font-size: 17px;
   color: #707070;
   padding-left: 3px;
+}
+.table-row{
+  width: 100%;
+}
+.table-column{
+  width: 15%;
+  border-bottom: 1px solid black;
+}
+tr{
+  border: 1px solid #333
 }
 </style>

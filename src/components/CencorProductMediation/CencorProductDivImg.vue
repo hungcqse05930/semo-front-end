@@ -1,6 +1,7 @@
 <template>
   <div class="accuracy-container">
     <div class="accuracy-content">
+      <input type="text" name="media_id"  v-bind:value="accuracy.id" style="display: none;"/>
       <p class="textnumber">{{accuracy.textnumber}}</p>
       <img class="user-picture" src="https://st.quantrimang.com/photos/image/072015/22/avatar.jpg" />
       <div class="user-information">
@@ -8,7 +9,7 @@
         <p class="accuracy-number">{{accuracy.number}}</p>
         <div class="accuracy-info">
           <b-field>
-            <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết" expanded></b-input>
+            <b-input name="media_notes" placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết" expanded></b-input>
           </b-field>
         </div>
       </div>

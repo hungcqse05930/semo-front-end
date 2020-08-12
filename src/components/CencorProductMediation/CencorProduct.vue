@@ -1,154 +1,182 @@
 <template>
   <nav class="title-bar-container">
-    <div id="title-bar-content">
-      <p class="info">Thông tin chung về sản phẩm</p>
+    <form id="ReviewProductForm" @submit="adminReview()">
+      <div id="title-bar-content">
+        <p class="info">Thông tin chung về sản phẩm</p>
 
-      <div class="div1">
-        <p class="smalltext" :class="{'edited': fruit}">Đây là quả gì?*</p>
-        <div class="choosefood">
-          <input type="checkbox" id="checkbox" v-model="checked" />
-          <label for="checkbox">{{ search.checked }}</label>
-        </div>
-        <b-field>
-          <b-input v-model="fruit" placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="div2">
-        <p class="smalltext">Sản phẩm của bạn đã sẵn sàng để tiêu thụ chưa?*</p>
-        <p class="choosefood">Chưa</p>
-      </div>
-
-      <div class="div1">
-        <p class="smalltext">Khối lượng của sản phẩm là bao nhiêu?*</p>
-        <div class="choosefood">
-          <p>5.42 tấn</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="div1">
-        <p class="smalltext">Địa điểm thu hoạch sản phẩm này ở đâu?*</p>
-        <div class="choosefood">
-          <p>Thôn 6, xã Thạch Hòa, huyện Thạch Thất, Hà Nội</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <p class="info1">Thông tin chi tiết về sản phẩm</p>
-
-      <div class="div1">
-        <p class="smalltext">Khối lượng quả chiếm bao nhiêu phần trăm trong sản phẩm này?</p>
-        <div class="choosefood">
-          <p>Trống</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="div1">
-        <p class="smalltext">Nồng độ đường trung bình của quả là bao nhiêu phần trăm?</p>
-        <div class="choosefood">
-          <p>Trống</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="div1">
-        <p class="smalltext">Cân nặng trung bình của sản phẩm là bao nhiêu?</p>
-        <div class="choosefood">
-          <p>20g</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="div1">
-        <p class="smalltext">Đường kính trung bình của sản phẩm là bao nhiêu?</p>
-        <div class="choosefood">
-          <p>8cm</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="div3">
-        <p class="smalltext">Hãy cho người mua biết thêm về sản phẩm của bạn*</p>
-        <div class="choosefood">
-          <p>
-            Đây là thông tin chi tiết về sản phẩm.
-            Nó có thể có nhiều dòng.
-            Nhìn chung thì đây là phần mà mọi người có thể đọc hoặc không.
-            Haiz gõ mệt quá.
-          </p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <p class="info1">Sản phẩm của bạn trông thế nào?</p>
-
-      <div class="div4">
-        <div class="divimg">
-          <div class="accuracies">
-            <CencorProductDivImg
-              class="accuracy-item"
-              v-bind:accuracy="accuracy"
-              v-for="accuracy in accuracies"
-              v-bind:key="accuracy.id"
+        <div class="div1">
+          <p class="smalltext" :class="{'edited': fruit}">Đây là quả gì?*</p>
+          <div class="choosefood">
+            <input type="checkbox" id="checkbox" v-model="checked" />
+            <label for="checkbox">{{ search.checked }}</label>
+            <input type="text" name="product_id" v-bind:value="product.id" style="display: none;" />
+            <input
+              type="text"
+              name="admin_id"
+              v-bind:value="$store.state.user.id"
+              style="display: none;"
             />
           </div>
+          <b-field>
+            <b-input
+              v-model="fruit"
+              name="fruit_title"
+              placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"
+            ></b-input>
+          </b-field>
+        </div>
+
+        <div class="div2">
+          <p class="smalltext">Sản phẩm của bạn đã sẵn sàng để tiêu thụ chưa?*</p>
+          <p class="choosefood" v-if="product.product_type == 2">Chưa sẵn sàng</p>
+          <p class="choosefood" v-else>Sẵn sàng</p>
+        </div>
+
+        <div class="div1">
+          <p class="smalltext">Khối lượng của sản phẩm là bao nhiêu?*</p>
+          <div class="choosefood">
+            <p>{{product.weight}} Tấn</p>
+          </div>
+          <b-field>
+            <b-input name="weight" placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
+          </b-field>
+        </div>
+
+        <div class="div1">
+          <p class="smalltext">Địa điểm thu hoạch sản phẩm này ở đâu?*</p>
+          <div class="choosefood">
+            <p>{{product.Address.address +', ' + product.Address.ward +', ' + product.Address.district +', ' + product.Address.province}}</p>
+          </div>
+          <b-field>
+            <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
+          </b-field>
+        </div>
+
+        <p class="info1">Thông tin chi tiết về sản phẩm</p>
+
+        <div class="div1">
+          <p class="smalltext">Khối lượng quả chiếm bao nhiêu phần trăm trong sản phẩm này?</p>
+          <div class="choosefood">
+            <p>{{product.fruit_pct}} %</p>
+          </div>
+          <b-field>
+            <b-input
+              name="fruit_pct"
+              placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"
+            ></b-input>
+          </b-field>
+        </div>
+
+        <div class="div1">
+          <p class="smalltext">Nồng độ đường trung bình của quả là bao nhiêu phần trăm?</p>
+          <div class="choosefood">
+            <p>{{product.sugar_pct}} %</p>
+          </div>
+          <b-field>
+            <b-input
+              name="sugar_pct"
+              placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"
+            ></b-input>
+          </b-field>
+        </div>
+
+        <div class="div1">
+          <p class="smalltext">Cân nặng trung bình của sản phẩm là bao nhiêu?</p>
+          <div class="choosefood">
+            <p>{{product.weight_avg}} Kg</p>
+          </div>
+          <b-field>
+            <b-input
+              name="weight_avg"
+              placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"
+            ></b-input>
+          </b-field>
+        </div>
+
+        <div class="div1">
+          <p class="smalltext">Đường kính trung bình của sản phẩm là bao nhiêu?</p>
+          <div class="choosefood">
+            <p>{{product.diameter_avg}} cm</p>
+          </div>
+          <b-field>
+            <b-input
+              name="diameter_avg"
+              placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"
+            ></b-input>
+          </b-field>
+        </div>
+
+        <div class="div3">
+          <p class="smalltext">Hãy cho người mua biết thêm về sản phẩm của bạn*</p>
+          <div class="choosefood">
+            <p>{{product.notes}}</p>
+          </div>
+          <b-field>
+            <b-input name="notes" placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
+          </b-field>
+        </div>
+
+        <p class="info1">Sản phẩm của bạn trông thế nào?</p>
+
+        <div class="div4">
+          <div class="divimg">
+            <div class="accuracies">
+              <CencorProductDivImg
+                class="accuracy-item"
+                v-bind:accuracy="accuracy"
+                v-for="accuracy in accuracies"
+                v-bind:key="accuracy.id"
+              />
+            </div>
+          </div>
+        </div>
+
+        <p class="info1">Hãy định giá cho sản phẩm của bạn</p>
+
+        <div class="div1">
+          <p class="smalltext">Giá khởi điểm cho sản phẩm này là bao nhiêu?*</p>
+          <div class="choosefood">
+            <p>{{product.price_init}}đ</p>
+          </div>
+          <b-field>
+            <b-input
+              name="price_init"
+              placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"
+            ></b-input>
+          </b-field>
+        </div>
+
+        <div class="div1">
+          <p class="smalltext">Bước giá cho mỗi lần trả giá bạn muốn đặt là bao nhiêu?*</p>
+          <div class="choosefood">
+            <p>{{product.price_step}}đ</p>
+          </div>
+          <b-field>
+            <b-input
+              name="price_step"
+              placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"
+            ></b-input>
+          </b-field>
+        </div>
+
+        <p class="info1">Hãy cho sản phẩm của bạn một cái tên</p>
+
+        <div class="div1">
+          <p class="smalltext">Bạn muốn đặt tên sản phẩm này là gì?*</p>
+          <div class="choosefood">
+            <p>{{product.title}}</p>
+          </div>
+          <b-field>
+            <b-input name="title" placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
+          </b-field>
+        </div>
+
+        <div class="buttons">
+          <!-- <b-button type="is-success">Gửi kiểm định</b-button> -->
+          <input class="btn-submit" type="submit" disabled value="Gửi kiểm định" />
         </div>
       </div>
-
-      <p class="info1">Hãy định giá cho sản phẩm của bạn</p>
-
-      <div class="div1">
-        <p class="smalltext">Giá khởi điểm cho sản phẩm này là bao nhiêu?*</p>
-        <div class="choosefood">
-          <p>80,000,000đ</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="div1">
-        <p class="smalltext">Bước giá cho mỗi lần trả giá bạn muốn đặt là bao nhiêu?*</p>
-        <div class="choosefood">
-          <p>200,000đ</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <p class="info1">Hãy cho sản phẩm của bạn một cái tên</p>
-
-      <div class="div1">
-        <p class="smalltext">Bạn muốn đặt tên sản phẩm này là gì?*</p>
-        <div class="choosefood">
-          <p>Táo Ambrosia nghìn năm có 1 đừng bỏ lỡ nhé các bạn ơi!</p>
-        </div>
-        <b-field>
-          <b-input placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết"></b-input>
-        </b-field>
-      </div>
-
-      <div class="buttons">
-        <b-button type="is-success">Gửi kiểm định</b-button>
-      </div>
-    </div>
+    </form>
   </nav>
 </template>
 
@@ -159,9 +187,85 @@ export default {
   components: {
     CencorProductDivImg,
   },
+  props: ["product_id_cencor"],
+  created: function () {
+    this.getProductById();
+    // this.$session.start()
+    // this.$session.set('product_id_cencor_session', this.product_id_cencor)
+  },
+  methods: {
+    getProductById() {
+      console.log(
+        "Access function getProductById, this.product_id_cencor = " +
+          this.product_id_cencor
+      );
+      fetch(`http://localhost:3003/admin/review/${this.product_id_cencor}`)
+        .then((response) => response.json())
+        .then((json) => {
+          if (Object.keys(json).length == 0) {
+            console.log("No product get from db");
+          } else {
+            let this_ = this;
+            this_.product = json[0];
+            console.log("Get product by id success, product is: ");
+            console.dir(this_.product);
+            //Assign data to variable
+            this_.search.checked = this_.product.Fruit.title;
+            var jsonArr = [{}];
+            for (var i = 0; i < this_.product.ProductMedia.length; i++) {
+              var pro_media = this_.product.ProductMedia[i];
+              var temp = {};
+              temp.id = pro_media.id;
+              temp.title = pro_media.notes;
+              var splitStr = pro_media.media_url.split("/");
+              temp.number = splitStr[splitStr.length - 1];
+              temp.textnumber = i + 1;
+              jsonArr.push(temp);
+            }
+            jsonArr.shift();
+            this_.accuracies = jsonArr;
+          }
+        });
+    },
+    updateProduct_media() {
+      console.log("Access updateProduct_media function...")
+      var requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "Vue POST Request Example" })
+      };
+      console.log("Access updateProduct_media function...");
+      fetch(`http://localhost:3003/admin/reviewMedia`, requestOptions)
+        .then((response) => response.json())
+        .then((json) => {
+          console.log("Result is: ");
+          console.dir(json);
+        });
+    },
+    insertProductUpdateRequest(){
+      console.log("Access insertProductUpdateRequest function...")
+      var requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "Vue POST Request Example" })
+      };
+      fetch(`http://localhost:3003/admin/reviewProduct`, requestOptions)
+      .then(response => response.json())
+      .then((json) => {
+        console.log('Result is: ')
+        console.dir(json)
+      });
+    },
+    adminReview() {
+      console.log("Access adminReview function...");
+      // this.updateProduct_media()
+      //this.insertProductUpdateRequest()
+    },
+  },
   data() {
     return {
-      fruit: '',
+      fruit: "",
+      product: Object,
       search: {
         checked: " TÁO AMBROSIA",
       },
@@ -169,7 +273,7 @@ export default {
         {
           id: 1,
           title: "Ảnh",
-          number: "IMG_20200405_142942.jpg",
+          number: "?????????????pg",
           textnumber: "1",
         },
         {
@@ -243,11 +347,12 @@ export default {
 .div4 {
   margin-top: 25px;
   width: 600px;
-  height: 624px;
+  display: inline-block;
 }
 .divimg {
   height: 104px;
   width: 600px;
+  display: contents;
 }
 .info {
   font-family: "Merriweather";
@@ -269,7 +374,7 @@ export default {
   color: #686868;
 }
 .edited {
-  color: #FD5F55 !important;
+  color: #fd5f55 !important;
 }
 .choosefood {
   margin-top: 6px;
@@ -288,5 +393,17 @@ export default {
   grid-template-columns: repeat(1, 1fr);
   grid-auto-rows: minmax(-100px, auto);
   margin-top: 24px;
+}
+.btn-submit {
+  background-color: #23d160;
+  border-color: transparent;
+  color: #fff;
+  width: 126px;
+  height: 36px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
