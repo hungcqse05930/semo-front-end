@@ -9,7 +9,7 @@
         <p class="accuracy-number">{{accuracy.number}}</p>
         <div class="accuracy-info">
           <b-field>
-            <b-input name="media_notes" placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết" expanded></b-input>
+            <b-input v-model="accuracy.notes" name="media_notes" placeholder="Nếu không hợp lý, hãy ghi chú cho người bán biết" expanded></b-input>
           </b-field>
         </div>
       </div>
