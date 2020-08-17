@@ -1,7 +1,7 @@
 <template>
   <div id="app">
       <Header/>
-      <CencorProduct/>
+      <CencorProduct v-bind:product_id_cencor="product_id"/>
   </div>
 </template>
 
@@ -15,6 +15,7 @@ export default {
     Header,
     CencorProduct,
   },
+  props: ['product_id']
 };
 </script>
 

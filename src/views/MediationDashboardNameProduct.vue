@@ -1,3 +1,4 @@
+
 <template>
   <div class="dashboard-container">
     <div class="dashboard-header">
@@ -19,8 +20,8 @@
         aria-role="dialog"
         aria-modal
         style="width: auto;"
-      >    
-      <MediationDashboardEditProduct/>
+      >
+        <MediationDashboardEditProduct />
       </b-modal>
     </section>
   </div>
@@ -34,13 +35,13 @@ export default {
   components: {
     MediationDashboardMenu,
     MediationDashboardNameProductTable,
-    MediationDashboardEditProduct
+    MediationDashboardEditProduct,
   },
   data() {
     return {
       isComponentModalActive: false,
     };
-  }
+  },
 };
 </script>
 <style scoped>

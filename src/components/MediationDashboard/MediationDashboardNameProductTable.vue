@@ -9,7 +9,7 @@
     </div>-->
     <b-table
       class="dashboard-table"
-      :data="data"
+      :data="listFruit"
       :checked-rows.sync="checkedRows"
       checkable
       checkbox-position="right"
@@ -40,10 +40,10 @@
       <template slot="bottom-left">
         <b>Total checked</b>
         : {{ checkedRows.length }}
-          <b-button @click="deleteAlert" type="is-text">🗑️ Xóa bài đăng</b-button>
-          <b-modal>
-            <MediationDashboardDelete />
-          </b-modal>
+        <b-button @click="deleteAlert" type="is-text">🗑️ Xóa bài đăng</b-button>
+        <b-modal>
+          <MediationDashboardDelete />
+        </b-modal>
         <button
           class="button field is-danger"
           @click="checkedRows = []"
@@ -70,107 +70,100 @@
 <script>
 import MediationDashboardEditProduct from "./MediationDashboardEditProduct.vue";
 import MediationDashboardDelete from "./MediationDashboardDelete.vue";
+import axios from "axios";
 export default {
   components: {
     MediationDashboardEditProduct,
-    MediationDashboardDelete
+    MediationDashboardDelete,
+  },
+  created: function () {
+    console.log("created method intable");
+    this.initialData();
+    this.sleep(1000).then(()=>{
+      this.getNumberOfEachFruit(this.listFruit);
+    })
   },
   methods: {
     allAlert() {
-      this.isComponentModalActive = true
+      this.isComponentModalActive = true;
     },
-    deleteAlert(){
-       this.$buefy.modal.open({
-         parent: this,
-         component: MediationDashboardDelete,
-         hasModalCard: true,
-         trapFocus: true
-       })
-    }
+    deleteAlert() {
+      this.$buefy.modal.open({
+        parent: this,
+        component: MediationDashboardDelete,
+        hasModalCard: true,
+        trapFocus: true,
+      });
+    },
+    initialData() {
+      let this_ = this;
+      console.log("Access function initialize");
+      //Count number of fruit
+      var url_str = "/fruit/all";
+      axios.get(url_str).then((response) => {
+        console.log("hongha");
+        this_.listFruit = response.data;
+      });
+    },
+    getNumberOfEachFruit() {
+      var result = this.listFruit;
+      for (var i = 0; i < result.length; i++) {
+        var temp = result[i];
+        this.listFruit[i].product_number = this.getNumberOfEachFruitById(temp.id)
+      }
+    },
+    sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    },
+    getNumberOfEachFruitById(fruit_id) {
+      console.log("Access getNumberOfEachFruitById function...");
+      var url_str = "/fruit/count/" + fruit_id;
+      axios.get(url_str).then((response) => {
+        console.log("successss");
+        return response.data.times
+      });
+    },
   },
   data() {
-    const data = [
-      {
-        id: 1,
-        product_name: "TÁO AMBROSSIA",
-        product_number: "312 SẢN PHẨM",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27"
-      },
-      {
-        id: 2,
-        product_name: "TÁO AMBROSSIA",
-        product_number: "312 SẢN PHẨM",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27"
-      },
-      {
-        id: 3,
-        product_name: "TÁO AMBROSSIA",
-        product_number: "312 SẢN PHẨM",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27"
-      },
-      {
-        id: 4,
-        product_name: "TÁO AMBROSSIA",
-        product_number: "312 SẢN PHẨM",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27"
-      },
-      {
-        id: 5,
-        product_name: "TÁO AMBROSSIA",
-        product_number: "312 SẢN PHẨM",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27"
-      },
-      {
-        id: 6,
-        product_name: "TÁO AMBROSSIA",
-        product_number: "312 SẢN PHẨM",
-        user_name: "Nguyen Ha Thanh",
-        date: "2016-10-15 13:43:27"
-      }
-    ];
-
     return {
       isComponentModalActive: false,
-      data,
       checkedRows: [],
+      listFruit: [{}],
+      numberOfEachFruit: [],
+      index: parseInt('0'),
       columns: [
         {
           field: "id",
           label: "ID",
           width: "40",
           numeric: true,
-          searchable: true
+          searchable: true,
         },
         {
-          field: "product_name",
+          field: "title",
           label: "TÊN LOẠI QUẢ",
           width: 500,
-          searchable: true
+          searchable: true,
         },
         {
           field: "product_number",
           label: "SỐ SẢN PHẨM",
-          searchable: true
+          searchable: true,
         },
+        // {
+        //   field: "user_name",
+        //   label: "NGƯỜI TẠO",
+        //   searchable: true
+        // },
         {
-          field: "user_name",
-          label: "NGƯỜI TẠO",
-          searchable: true
-        },
-        {
-          field: "date",
+          field: "date_created",
           label: "THỜI GIAN TẠO",
           centered: true,
-          searchable: true
-        }
-      ]
+          searchable: true,
+        },
+      ],
     };
-  }
+  },
 };
 </script>
 <style scoped>

@@ -166,7 +166,8 @@ const routes = [
   {
     path: '/cencorproductmediation',
     name: 'CencorProductMediation',
-    component: CencorProductMediation
+    component: CencorProductMediation,
+    props: true
   },
   {
     path: '/mediationdashboardnameproduct',
