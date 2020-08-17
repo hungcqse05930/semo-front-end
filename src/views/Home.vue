@@ -100,16 +100,13 @@
 <script>
 // @ is an alias to /src
 import axios from "axios";
-import AuctionCarouselList from "../components/AuctionCarouselList.vue";
-import AuctionGridList from "../components/AuctionGridList.vue";
-import GridCircularList from "../components/GridCircularList.vue";
 
 export default {
   name: "Home",
   components: {
-    AuctionCarouselList,
-    GridCircularList,
-    AuctionGridList,
+    'AuctionCarouselList': () => import('../components/AuctionCarouselList.vue'),
+    'AuctionGridList': () => import('../components/AuctionGridList.vue'),
+    'GridCircularList': () => import('../components/GridCircularList.vue'),
   },
   created() {
     this.getLatest();

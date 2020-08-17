@@ -62,12 +62,21 @@ const routes = [
     component: () => import('../views/Auction.vue')
   },
   {
+    path: '/user/info/:id',
+    name: 'Tài khoản của bạn',
+    props: true,
+    component: () => import('../views/UserInfo.vue')
+  },
+  {
     path: '/user/info',
     name: 'Tài khoản của bạn',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/UserInfo.vue')
+    component: () => import('../views/UserInfo.vue')
+  },
+  {
+    path: '/user/address/:id',
+    name: 'Địa chỉ của bạn',
+    props: true,
+    component: () => import('../views/UserInfoAddress.vue')
   },
   {
     path: '/user/product',

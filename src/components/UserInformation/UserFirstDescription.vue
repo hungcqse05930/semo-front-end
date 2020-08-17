@@ -1,14 +1,17 @@
 <template>
   <div class="container">
-    <div class="user-info columns is-multiline is-centered">
-      <div class="profile column">
+    <div class="columns is-mobile is-multiline is-centered">
+      <div class="column is-narrow-mobile">
         <div class="columns is-mobile is-vcentered">
           <div class="column is-narrow">
-            <div class="profile-image" :style="{ backgroundImage: 'url(' + img_url + ')', margin: 0 }"></div>
+            <div
+              class="profile-image"
+              :style="{ backgroundImage: 'url(' + user.img_url + ')', margin: 0 }"
+            ></div>
           </div>
           <div class="user-name column">
-            <p class="name">Bùi Trần Việt Anh</p>
-            <p class="city">Thanh Hóa</p>
+            <p class="name">{{ user.name }}</p>
+            <p class="city">{{ user.Addresses[0].province }}</p>
           </div>
         </div>
       </div>
@@ -16,15 +19,11 @@
         <div class="columns is-mobile is-variable is-6">
           <div class="user-rate column is-narrow">
             <p class="first-content">ĐÁNH GIÁ</p>
-            <p class="second-content">★ 3.9</p>
-          </div>
-          <div class="user-time column is-narrow">
-            <p class="first-content">ĐÃ BÁN</p>
-            <p class="second-content">14,294 tạ</p>
+            <p class="second-content">★ {{ user.rate }}</p>
           </div>
           <div class="user-time column is-narrow">
             <p class="first-content">THAM GIA</p>
-            <p class="second-content">7 tháng</p>
+            <p class="second-content">{{ user.membership }} tháng</p>
           </div>
         </div>
       </div>
@@ -35,9 +34,7 @@
 <script>
 export default {
   name: "UserFirstDescription",
-  props: {
-    user: Object,
-  },
+  props: ["user"],
   data() {
     return {
       img_url: "https://st.quantrimang.com/photos/image/072015/22/avatar.jpg",

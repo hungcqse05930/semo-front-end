@@ -40,7 +40,7 @@ Vue.use(Buefy)
     </div>
     <div class="main-view" style="display: block; margin-top: 12px;">
       <transition name="moveUp">
-        <router-view id="main-view" />
+        <router-view :key="this.$router.fullPath" id="main-view" />
       </transition>
     </div>
 

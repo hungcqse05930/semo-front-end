@@ -14,7 +14,8 @@ export default new Vuex.Store({
         user: {
             id: null,
             token: null,
-            img_dir: null
+            img_dir: null,
+            info: {}
         },
         new_user: {
             phone: ''
@@ -31,7 +32,8 @@ export default new Vuex.Store({
         user: state => state.user,
         token: state => state.user.token,
         new_user: state => state.new_user,
-        phone: state => state.new_user.phone
+        phone: state => state.new_user.phone,
+        first_bids: state => state.user.first_bids
     },
     mutations: {
         SET_UP_SESSION: (state, user) => {
@@ -49,15 +51,22 @@ export default new Vuex.Store({
         SET_SIGN_UP_PHONE: (state, phone) => {
             state.new_user.phone = phone
         },
-        // SET_SIGN_UP_
+        // SET_USER_BIDS
+        SET_USER_BIDS: (state, isFirstBid) => {
+            state.user.bids = isFirstBid
+        }
     },
     actions: {
-        LOGIN: ({ commit }, user) => {
+        LOGIN: ({ commit, state }, user) => {
             return new Promise((ressolve, reject) => {
                 axios.post(`/user/login`, user)
                     .then(response => {
                         if (response.status === 200) {
                             commit('SET_UP_SESSION', response.data)
+
+                            axios.get(`/auction_bid/countBid/${state.user.id}`).then(response => {
+                                commit("SET_USER_BIDS", response.data.times > 0 ? false : true)
+                            })
                         }
                         ressolve(true)
                     })
@@ -108,6 +117,9 @@ export default new Vuex.Store({
                     reject(error)
                 })
             })
+        },
+        CHANGE_FIRST_BIDS: ({ commit }) => {
+            commit("SET_USER_BIDS", false)
         }
     }
 });

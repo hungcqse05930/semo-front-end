@@ -8,8 +8,8 @@
           <!-- fruit -->
           <b-button type="is-text" tag="router-link" :to="'/fruit/' + fruit.id">
             <div style="display: flex; align-items: center;">
-            <img :src="fruit.icon_url" style="height: 24px; margin-right: 12px;" />
-            <p>{{fruit.title}}</p>
+              <img :src="fruit.icon_url" style="height: 24px; margin-right: 12px;" />
+              <p>{{fruit.title}}</p>
             </div>
           </b-button>
           <!-- title -->
@@ -29,7 +29,9 @@
                   <a class="is-text">{{user.name}} ★ {{user.rate}}</a>
                 </div>
                 <div class="column"></div>
-                <div class="column is-narrow">Mở đấu giá từ {{auction.Auctions[0].date_created}}</div>
+                <div
+                  class="column is-narrow"
+                >Mở đấu giá từ {{format_date(auction.Auctions[0].date_created)}}</div>
               </div>
             </div>
           </div>
@@ -40,7 +42,7 @@
             <div class="column">
               <data-block>
                 <template v-slot:title>THỜI GIAN CÒN LẠI</template>
-                <template v-slot:content>{{auction.Auctions[0].remain}}</template>
+                <template v-slot:content>{{auction.Auctions[0].remain}} ngày</template>
               </data-block>
             </div>
           </div>
@@ -52,12 +54,8 @@
               <p class="bidnow">Bạn muốn đấu giá sản phẩm này chứ?</p>
             </div>
             <div class="column is-narrow">
-              <b-button
-                class="btn"
-                type="is-primary"
-                @click="isComponentModalActive = true"
-                rounded
-              >Trả giá ngay</b-button>
+              <b-button class="btn" type="is-primary" @click="enterBid" rounded>Trả giá ngay</b-button>
+              <!-- enterBid -->
             </div>
           </div>
         </div>
@@ -73,13 +71,13 @@
             <div class="column">
               <data-block>
                 <template v-slot:title>GIÁ HIỆN TẠI</template>
-                <template v-slot:content>{{auction.price_cur}}đ</template>
+                <template v-slot:content>{{numberWithCommas(auction.Auctions[0].price_cur)}}đ</template>
               </data-block>
             </div>
             <div class="column">
               <data-block>
                 <template v-slot:title>BƯỚC GIÁ</template>
-                <template v-slot:content>{{auction.price_step}}đ</template>
+                <template v-slot:content>{{numberWithCommas(auction.price_step)}}đ</template>
               </data-block>
             </div>
           </div>
@@ -156,7 +154,7 @@
           <div class="column is-full is-mobile">
             <data-cell>
               <template v-slot:title>GIÁ KHỞI ĐIỂM</template>
-              <template v-slot:content>{{auction.price_init}}</template>
+              <template v-slot:content>{{numberWithCommas(auction.price_init)}}đ</template>
             </data-cell>
           </div>
           <!-- info -->
@@ -188,28 +186,183 @@
         <!-- similar -->
       </auction-carousel-list>
     </div>
+
+    <!-- modals -->
+    <!-- instruction modal -->
+    <b-modal
+      :active.sync="isFirstModal"
+      trap-focus
+      :destroy-on-hide="false"
+      aria-role="dialog"
+      aria-modal
+    >
+      <div style="overflow: hidden;">
+        <div class="columns is-centered">
+          <div class="column is-two-thirds">
+            <div class="instruction-container">
+              <b-carousel
+                v-model="index"
+                class="carousel"
+                :autoplay="false"
+                :has-drag="true"
+                :pause-info="true"
+                :pause-hover="true"
+                :interval="10000"
+                :repeat="false"
+              >
+                <b-carousel-item v-for="(step, i) in steps" :key="i" style="height: 100%;">
+                  <section>
+                    <div style="display: flex; flex-flow: column; align-items: center;">
+                      <p
+                        class="list-title"
+                        style="text-align: center; margin-top: 40px; margin-bottom: 40px;"
+                      >{{step.title}}</p>
+                      <p style="font-size: 80px;">{{step.icon}}</p>
+                      <p
+                        class="cell-title"
+                        style="text-align: center; margin-top: 40px; word-wrap: break-word; padding-left: 40px; padding-right: 40px; font-weight: 700;"
+                      >{{step.description}}</p>
+                      <b-button
+                        rounded
+                        type="is-primary"
+                        style="margin: 40px 0;"
+                        @click="next"
+                      >{{step.button}}</b-button>
+                    </div>
+                  </section>
+                </b-carousel-item>
+              </b-carousel>
+            </div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
+    <!-- bidding modal -->
+    <b-modal
+      :active.sync="isBiddingModal"
+      trap-focus
+      :destroy-on-hide="false"
+      aria-role="dialog"
+      aria-modal
+    >
+      <div class="card">
+        <!-- current info -->
+        <div class="columns is-mobile">
+          <div class="column">
+            <!-- current price -->
+            <data-block>
+              <template v-slot:title>GIÁ HIỆN TẠI</template>
+              <template v-slot:content>{{numberWithCommas(auction.Auctions[0].price_cur)}}đ</template>
+            </data-block>
+          </div>
+          <div class="column">
+            <!-- step price -->
+            <data-block>
+              <template v-slot:title>BƯỚC GIÁ</template>
+              <template v-slot:content>{{numberWithCommas(auction.price_step)}}đ</template>
+            </data-block>
+          </div>
+        </div>
+        <p
+          class="cell-title"
+          style="text-align: center; margin-top: 24px; font-size: 17px;"
+        >{{auction.Auctions[0].remain}} | {{bids.length}} lượt đấu giá</p>
+
+        <!-- break -->
+        <hr />
+
+        <!-- place bid -->
+        <div style="margin-top: 24px;">
+          <form @submit.prevent="placeBid">
+            <p class="filter-title active">🤑 Trả giá</p>
+            <!-- notification -->
+            <b-notification
+              type="is-danger"
+              has-icon
+              aria-close-label="Đóng"
+              role="alert"
+              :active.sync="error"
+              class="error-notification"
+            >{{error_msg}}</b-notification>
+            <div class="columns is-mobile">
+              <div class="column">
+                <b-input
+                  v-model="amount"
+                  type="number"
+                  :placeholder="(numberWithCommas(auction.Auctions[0].price_cur + auction.price_step)) + 'đ'"
+                ></b-input>
+              </div>
+              <div
+                class="column is-one-third-mobile is-one-quarter-tablet is-one-quarter-desktop is-one-fifth-widescreen"
+              >
+                <b-button
+                  :disabled="amount.length === 0"
+                  native-type="submit"
+                  type="is-primary"
+                  expanded
+                  rounded
+                >Đấu giá</b-button>
+              </div>
+            </div>
+          </form>
+          <br />
+          <div class="columns is-mobile">
+            <div class="column is-narrow">
+              <div class="columns is-mobile">
+                <div class="column is-narrow">
+                  <p class="cell-title" style="padding: 0">👛 Ví của bạn:</p>
+                </div>
+                <div class="column is-narrow">
+                  <p class="active">23,500,000đ</p>
+                </div>
+              </div>
+            </div>
+            <div class="column"></div>
+            <div class="column is-narrow">
+              <router-link to="/">NẠP TIỀN</router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
+    <!-- success modal -->
+    <b-modal
+      :active.sync="isSuccessModal"
+      trap-focus
+      :destroy-on-hide="true"
+      aria-role="dialog"
+      aria-modal
+    >
+      <div class="card" style="width: fit-content;">
+        <div class="columns is-centered is-mobile">
+          <div class="column">
+            <p style="font-size: 80px; text-align: center;">✔️</p>
+            <p class="cell-content">Bạn đã đấu giá thành công!</p>
+          </div>
+        </div>
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import moment from "moment";
 // import AuctionCarouselList from "../components/AuctionCarouselList";
 // import DataBlock from "../components/DataBlock";
 // import DataCell from "../components/DataCell";
 
 export default {
   components: {
-    'DataBlock': () => import('../components/DataBlock'),
-    'DataCell': () => import('../components/DataCell'),
-    'AuctionCarouselList': () => import('../components/AuctionCarouselList'),
+    DataBlock: () => import("../components/DataBlock"),
+    DataCell: () => import("../components/DataCell"),
+    AuctionCarouselList: () => import("../components/AuctionCarouselList"),
   },
   props: ["id"],
   created() {
-    axios.put(`/auction/update/${this.id}`).then(() => {
-      this.getAuctionInfo();
-      this.getAuctionBids();
-      this.getAuctionSimilar();
-    });
+    this.refreshData();
   },
   destroyed() {
     this.$destroy();
@@ -220,6 +373,13 @@ export default {
     },
     close() {
       this.isComponentModalActive = false;
+    },
+    refreshData() {
+      axios.put(`/auction/update/${this.id}`).then(() => {
+        this.getAuctionInfo();
+        this.getAuctionBids();
+        this.getAuctionSimilar();
+      });
     },
     getAuctionInfo() {
       axios.get(`/auction/${this.id}`).then((response) => {
@@ -253,9 +413,107 @@ export default {
         this.similar = response.data;
       });
     },
+    enterBid() {
+      if (this.$store.state.user.first_bids) {
+        this.isFirstModal = true;
+      } else {
+        this.isBiddingModal = true;
+      }
+    },
+    openBid() {
+      this.isFirstModal = false;
+      this.isBiddingModal = true;
+    },
+    placeBid() {
+      axios
+        .post("/auction_bid/", {
+          auction_id: this.id,
+          bidder_user_id: this.$store.state.user.id,
+          amount: this.amount,
+        })
+        .then(() => {
+          this.refreshData();
+          this.isBiddingModal = false;
+          this.amount = "";
+
+          //
+          this.isBiddingModal = false;
+          this.isSuccessModal = true;
+
+          let vm = this;
+          setTimeout(function () {
+            vm.isSuccessModal = false;
+          }, 2500);
+        })
+        .catch((error) => {
+          this.error = true;
+          this.error_msg = error.response.data.message;
+        });
+    },
+    next() {
+      if (this.index === this.steps.length - 1) {
+        this.isFirstModal = false;
+        this.isBiddingModal = true;
+      } else {
+        ++this.index;
+      }
+    },
+    format_date(value) {
+      return moment(String(value)).format("DD/MM/YYYY, HH:MM:SS");
+    },
+    numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
   },
   data() {
     return {
+      index: 0,
+      steps: [
+        {
+          title: "Đấu giá",
+          icon: "💡",
+          description:
+            "Để bạn đấu giá thành công, hãy xem qua hướng dẫn này nhé! Sẽ không lâu đâu.",
+          button: "Được luôn!",
+        },
+        {
+          title: "Điều kiện đấu giá",
+          icon: "👛",
+          description:
+            "Hãy đảm bảo ví semo của bạn có đủ 10% giá trị hiện tại của mặt hàng.",
+          button: "Tiếp theo",
+        },
+        {
+          title: "Điều kiện đấu giá",
+          icon: "👛 💵",
+          description:
+            "Mỗi lần đấu giá có phí là 150,000đ. Nếu không còn là người trả giá cao nhất, bạn sẽ không mất phí.",
+          button: "Tiếp theo",
+        },
+        {
+          title: "Điều kiện đấu giá",
+          icon: "💵",
+          description:
+            "Lần trả giá hợp lệ phải cao hơn giá trị hiện tại một khoảng hơn hoặc bằng bước giá của sản phẩm.",
+          button: "Tiếp theo",
+        },
+        {
+          title: "Bạn đã sẵn sàng rồi!",
+          icon: "🤗",
+          description:
+            "Chúc bạn thành công với semo! Hãy liên lạc với chúng tôi nếu có thắc mắc gì.",
+          button: "Trả giá ngay!",
+        },
+      ],
+      // modal attrs
+      isFirstModal: false,
+      isBiddingModal: false,
+      isSuccessModal: false,
+      amount: "",
+      // error
+      error: false,
+      error_msg: "",
+      // bidders table data
       columns: [
         {
           field: "User.name",
@@ -271,206 +529,59 @@ export default {
           numeric: true,
         },
       ],
-      isComponentModalActive: false,
-      products: [
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-        {
-          id: 1,
-          title: "Táo này đỉnh vcl các bạn ơi",
-          weight: "4,2 tạ",
-          pricetext: "Giá hiện tại",
-          price: "80.000.000đ",
-          timetext: "Thời gian còn lại",
-          time: "4 tháng 21 ngày",
-          address: {
-            province: "Long An",
-          },
-        },
-      ],
+      // data for page
+      // fruit
       fruit: {
         id: 0,
         title: "",
         icon_url: "",
       },
-      user: Object,
-      auction: Object,
-      media: Array,
-      bids: Array,
-      similar: Array,
+      // auction host
+      user: {},
+      // auction info
+      auction: {},
+      // product media
+      media: [],
+      // bidders
+      bids: [],
+      // similar products
+      similar: [],
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
 .table {
   background-color: #ffffff00;
 }
+
+.card {
+  border-radius: 10px;
+  overflow-x: hidden;
+  width: 640px;
+  padding: 40px;
+  margin: 0 auto;
+}
+
+.instruction-container {
+  background-color: #ffffff;
+  background-image: url("../assets/BG.png");
+  background-position: center;
+  background-size: cover;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.carousel {
+  height: 100%;
+  width: 100%;
+}
+
+/* .cell-title {
+  word-wrap: break-word;
+  padding-left: 40px;
+  padding-right: 40px;
+  font-weight: 700;
+} */
 </style>

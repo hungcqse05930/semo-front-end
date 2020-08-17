@@ -7,7 +7,7 @@
         <p class="product-title">{{ auction.Product.title }}</p>
         <div class="product-section">
           <p class="section-label">Giá hiện tại</p>
-          <p class="section-content">{{ auction.price_cur }}đ</p>
+          <p class="section-content">{{ numberWithCommas(auction.price_cur) }}đ</p>
         </div>
         <div class="product-section">
           <p class="section-label">Thời gian còn lại</p>
@@ -30,7 +30,10 @@ export default {
   methods: {
     moveToPage() {
       this.$router.push({ path: '/auction/' + this.auction.id })
-    }
+    },
+    numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
   }
   // },
   // data() {
